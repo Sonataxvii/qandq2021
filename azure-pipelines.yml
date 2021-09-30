@@ -48,9 +48,9 @@ steps:
 - script: npm install
   workingDirectory: frontend
   displayName: 'frontend install dependencies'
-- script: npm run test:ci
-  workingDirectory: frontend
-  displayName: 'frontend tests'
+#- script: npm run test:ci
+#  workingDirectory: frontend
+#  displayName: 'frontend tests'
 
 # Frontend - Publish to Staging
 - script: npm run build:staging
