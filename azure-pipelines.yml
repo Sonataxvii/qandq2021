@@ -1,0 +1,41 @@
+# ASP.NET Core
+# Build and test ASP.NET Core projects targeting .NET Core.
+# Add steps that run tests, create a NuGet package, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+trigger:
+- master
+
+pool:
+  vmImage: ubuntu-latest
+
+variables:
+  buildConfiguration: 'Release'
+
+steps:
+- task: UseDotNet@2
+  inputs:
+    packageType: 'sdk'
+    version: '5.0.100'
+- script: dotnet build --configuration $(buildConfiguration) 
+  workingDirectory: backend
+  displayName: 'backend build'  
+- script: dotnet test
+  workingDirectory: backend
+  displayName: 'backend tests'
+- script: dotnet publish -c $(buildConfiguration) --runtime win-x86 --self-contained
+  workingDirectory: backend
+  displayName: 'backend publish'
+- task: ArchiveFiles@2
+  inputs:
+    rootFolderOrFile: 'backend/bin/Release/net5.0/winx86/publish'
+    includeRootFolder: false
+    archiveType: zip
+    archiveFile: '$(Build.ArtifactStagingDirectory)/backend/$(Build.BuildId).zip'
+    replaceExistingArchive: true
+  displayName: 'backend zip files'
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathtoPublish: '$(Build.ArtifactStagingDirectory)/backend'
+    artifactName: 'backend'
+  displayName: 'backend publish to pipeline'
